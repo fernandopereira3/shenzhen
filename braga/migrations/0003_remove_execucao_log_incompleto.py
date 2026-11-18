@@ -5,28 +5,42 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('braga', '0002_execucao'),
+        ("braga", "0002_execucao"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='execucao',
-            name='log',
+            model_name="execucao",
+            name="log",
         ),
         migrations.CreateModel(
-            name='Incompleto',
+            name="Incompleto",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('cpf', models.CharField(max_length=14)),
-                ('curso_id', models.CharField(max_length=20)),
-                ('nome', models.CharField(max_length=300)),
-                ('url', models.URLField(max_length=300)),
-                ('execucao', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='incompletos', to='braga.execucao')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("cpf", models.CharField(max_length=14)),
+                ("curso_id", models.CharField(max_length=20)),
+                ("nome", models.CharField(max_length=300)),
+                ("url", models.URLField(max_length=300)),
+                (
+                    "execucao",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="incompletos",
+                        to="braga.execucao",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['cpf', 'nome'],
+                "ordering": ["cpf", "nome"],
             },
         ),
     ]

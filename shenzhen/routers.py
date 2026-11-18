@@ -5,7 +5,7 @@ class BotRouter:
     """Models de cada bot vão pro banco com o nome do app; o resto fica no 'default'."""
 
     def _banco(self, app_label):
-        return app_label if app_label in settings.BOTS_COM_BANCO else 'default'
+        return app_label if app_label in settings.BOTS_COM_BANCO else "default"
 
     def db_for_read(self, model, **hints):
         return self._banco(model._meta.app_label)

@@ -4,23 +4,42 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('braga', '0001_initial'),
+        ("braga", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Execucao',
+            name="Execucao",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('inicio', models.DateTimeField(auto_now_add=True)),
-                ('fim', models.DateTimeField(blank=True, null=True)),
-                ('status', models.CharField(choices=[('rodando', 'Rodando'), ('concluida', 'Concluída'), ('cancelada', 'Cancelada'), ('falhou', 'Falhou')], default='rodando', max_length=10)),
-                ('log', models.TextField(blank=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("inicio", models.DateTimeField(auto_now_add=True)),
+                ("fim", models.DateTimeField(blank=True, null=True)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("rodando", "Rodando"),
+                            ("concluida", "Concluída"),
+                            ("cancelada", "Cancelada"),
+                            ("falhou", "Falhou"),
+                        ],
+                        default="rodando",
+                        max_length=10,
+                    ),
+                ),
+                ("log", models.TextField(blank=True)),
             ],
             options={
-                'ordering': ['-inicio'],
+                "ordering": ["-inicio"],
             },
         ),
     ]

@@ -4,22 +4,28 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Conta',
+            name="Conta",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('cpf', models.CharField(max_length=14, unique=True)),
-                ('senha', models.CharField(max_length=128)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("cpf", models.CharField(max_length=14, unique=True)),
+                ("senha", models.CharField(max_length=128)),
             ],
             options={
-                'ordering': ['cpf'],
+                "ordering": ["cpf"],
             },
         ),
     ]

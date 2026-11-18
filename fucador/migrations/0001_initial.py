@@ -4,70 +4,135 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Configuracao',
+            name="Configuracao",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('prompt', models.TextField()),
-                ('modelo', models.CharField(default='gemini-3.8-flash', max_length=100)),
-                ('por_email', models.BooleanField(default=True, verbose_name='enviar por e-mail')),
-                ('por_whatsapp', models.BooleanField(default=True, verbose_name='enviar por WhatsApp')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("prompt", models.TextField()),
+                (
+                    "modelo",
+                    models.CharField(default="gemini-3.8-flash", max_length=100),
+                ),
+                (
+                    "por_email",
+                    models.BooleanField(default=True, verbose_name="enviar por e-mail"),
+                ),
+                (
+                    "por_whatsapp",
+                    models.BooleanField(
+                        default=True, verbose_name="enviar por WhatsApp"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='ContatoWhatsApp',
+            name="ContatoWhatsApp",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('nome', models.CharField(blank=True, max_length=100)),
-                ('telefone', models.CharField(max_length=20, unique=True, verbose_name='telefone')),
-                ('apikey', models.CharField(max_length=50)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("nome", models.CharField(blank=True, max_length=100)),
+                (
+                    "telefone",
+                    models.CharField(
+                        max_length=20, unique=True, verbose_name="telefone"
+                    ),
+                ),
+                ("apikey", models.CharField(max_length=50)),
             ],
             options={
-                'ordering': ['nome', 'telefone'],
+                "ordering": ["nome", "telefone"],
             },
         ),
         migrations.CreateModel(
-            name='Destinatario',
+            name="Destinatario",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('nome', models.CharField(blank=True, max_length=100)),
-                ('email', models.EmailField(max_length=254, unique=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("nome", models.CharField(blank=True, max_length=100)),
+                ("email", models.EmailField(max_length=254, unique=True)),
             ],
             options={
-                'ordering': ['nome', 'email'],
+                "ordering": ["nome", "email"],
             },
         ),
         migrations.CreateModel(
-            name='Envio',
+            name="Envio",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('inicio', models.DateTimeField(auto_now_add=True)),
-                ('fim', models.DateTimeField(blank=True, null=True)),
-                ('status', models.CharField(choices=[('enviando', 'Enviando'), ('enviado', 'Enviado'), ('falhou', 'Falhou')], default='enviando', max_length=10)),
-                ('produto', models.CharField(max_length=200)),
-                ('emails', models.PositiveIntegerField(default=0)),
-                ('whatsapps', models.PositiveIntegerField(default=0)),
-                ('erro', models.TextField(blank=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("inicio", models.DateTimeField(auto_now_add=True)),
+                ("fim", models.DateTimeField(blank=True, null=True)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("enviando", "Enviando"),
+                            ("enviado", "Enviado"),
+                            ("falhou", "Falhou"),
+                        ],
+                        default="enviando",
+                        max_length=10,
+                    ),
+                ),
+                ("produto", models.CharField(max_length=200)),
+                ("emails", models.PositiveIntegerField(default=0)),
+                ("whatsapps", models.PositiveIntegerField(default=0)),
+                ("erro", models.TextField(blank=True)),
             ],
             options={
-                'ordering': ['-inicio'],
+                "ordering": ["-inicio"],
             },
         ),
         migrations.CreateModel(
-            name='Produto',
+            name="Produto",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('nome', models.CharField(max_length=200, unique=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("nome", models.CharField(max_length=200, unique=True)),
             ],
             options={
-                'ordering': ['nome'],
+                "ordering": ["nome"],
             },
         ),
     ]

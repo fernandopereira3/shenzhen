@@ -23,7 +23,7 @@ def _rodando():
 
 
 def _contas():
-    return dict(Conta.objects.values_list('cpf', 'senha'))
+    return dict(Conta.objects.values_list("cpf", "senha"))
 
 
 def _executar(users, cancelar):
@@ -57,21 +57,25 @@ def iniciar():
 
 
 def _ler_log():
-    return bot.LOG_FILE.read_text(encoding='utf-8') if bot.LOG_FILE.exists() else ''
+    return bot.LOG_FILE.read_text(encoding="utf-8") if bot.LOG_FILE.exists() else ""
 
 
 @login_required
 def index(request, form=None):
     log = _ler_log()
-    return render(request, 'braga/index.html', {
-        'contas': Conta.objects.all(),
-        'form': form or ContaForm(),
-        'rodando': _rodando(),
-        'cancelando': _rodando() and _cancelar.is_set(),
-        'log': log,
-        'historico': Execucao.objects.prefetch_related('incompletos')[:30],
-        'abrir_modal': form is not None,  # erro ao adicionar: reabre o modal
-    })
+    return render(
+        request,
+        "braga/index.html",
+        {
+            "contas": Conta.objects.all(),
+            "form": form or ContaForm(),
+            "rodando": _rodando(),
+            "cancelando": _rodando() and _cancelar.is_set(),
+            "log": log,
+            "historico": Execucao.objects.prefetch_related("incompletos")[:30],
+            "abrir_modal": form is not None,  # erro ao adicionar: reabre o modal
+        },
+    )
 
 
 @login_required
@@ -81,23 +85,27 @@ def adicionar(request):
     if not form.is_valid():
         return index(request, form)
     # em CPF existente, campo em branco mantém o valor atual
-    dados = {campo: form.cleaned_data[campo] for campo in ('nome', 'senha') if form.cleaned_data[campo]}
-    Conta.objects.update_or_create(cpf=form.cleaned_data['cpf'], defaults=dados)
-    return redirect('braga')
+    dados = {
+        campo: form.cleaned_data[campo]
+        for campo in ("nome", "senha")
+        if form.cleaned_data[campo]
+    }
+    Conta.objects.update_or_create(cpf=form.cleaned_data["cpf"], defaults=dados)
+    return redirect("braga")
 
 
 @login_required
 @require_POST
 def remover(request):
-    Conta.objects.filter(cpf=request.POST.get('cpf')).delete()
-    return redirect('braga')
+    Conta.objects.filter(cpf=request.POST.get("cpf")).delete()
+    return redirect("braga")
 
 
 @login_required
 @require_POST
 def rodar(request):
     iniciar()
-    return redirect(reverse('braga') + '#sec-execucao')
+    return redirect(reverse("braga") + "#sec-execucao")
 
 
 @login_required
@@ -105,15 +113,16 @@ def rodar(request):
 def cancelar(request):
     if _rodando():
         _cancelar.set()
-    return redirect(reverse('braga') + '#sec-execucao')
+    return redirect(reverse("braga") + "#sec-execucao")
 
 
 @login_required
 def status(request):
     """Lido pela página a cada 2s enquanto o bot roda."""
-    return JsonResponse({
-        'log': _ler_log(),
-        'rodando': _rodando(),
-        'cancelando': _rodando() and _cancelar.is_set(),
-    })
-
+    return JsonResponse(
+        {
+            "log": _ler_log(),
+            "rodando": _rodando(),
+            "cancelando": _rodando() and _cancelar.is_set(),
+        }
+    )

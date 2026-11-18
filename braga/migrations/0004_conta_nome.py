@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('braga', '0003_remove_execucao_log_incompleto'),
+        ("braga", "0003_remove_execucao_log_incompleto"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='conta',
-            name='nome',
+            model_name="conta",
+            name="nome",
             field=models.CharField(blank=True, max_length=100),
         ),
     ]

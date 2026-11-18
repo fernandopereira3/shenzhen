@@ -1,4 +1,5 @@
 """BragaBot: incorporado de braga_bot/braga.py e ssl_ca.py."""
+
 import os
 import re
 import tempfile
@@ -50,7 +51,9 @@ def run(users, cancelar=None):
             try:
                 incompletos = bot.run_for_user(cpf, senha)
                 resultados[cpf] = incompletos
-                linhas = [f"  • [{cid}] {nome}: {url}" for cid, nome, url in incompletos]
+                linhas = [
+                    f"  • [{cid}] {nome}: {url}" for cid, nome, url in incompletos
+                ]
                 log("📋 Cursos incompletos:\n" + ("\n".join(linhas) or "  Nenhum."))
             except Cancelado:
                 raise

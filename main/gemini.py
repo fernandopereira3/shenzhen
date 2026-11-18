@@ -1,4 +1,5 @@
 """Gemini compartilhado pelos bots (News e Fuçador): pergunta com busca do Google e lista de modelos."""
+
 import os
 
 import requests
@@ -15,7 +16,10 @@ def ask_gemini(prompt: str, modelo: str = GEMINI_MODEL) -> tuple[str, list[str]]
         f"{GEMINI_API}/{modelo}:generateContent",
         headers={"x-goog-api-key": GEMINI_KEY},
         # google_search: sem isso o modelo inventa em vez de buscar as notícias/ofertas de hoje
-        json={"contents": [{"parts": [{"text": prompt}]}], "tools": [{"google_search": {}}]},
+        json={
+            "contents": [{"parts": [{"text": prompt}]}],
+            "tools": [{"google_search": {}}],
+        },
         timeout=180,  # com busca (uma por site, no Fuçador) passa fácil de 60s
     )
     resp.raise_for_status()
@@ -27,20 +31,38 @@ def ask_gemini(prompt: str, modelo: str = GEMINI_MODEL) -> tuple[str, list[str]]
 
 
 # modelos da lista que não geram texto ou não usam a busca do Google (sem busca não há dado real)
-_FORA_DA_LISTA = ("tts", "image", "banana", "lyria", "robotics", "computer-use", "transcribe",
-                  "customtools", "embedding", "antigravity", "deep-research")
+_FORA_DA_LISTA = (
+    "tts",
+    "image",
+    "banana",
+    "lyria",
+    "robotics",
+    "computer-use",
+    "transcribe",
+    "customtools",
+    "embedding",
+    "antigravity",
+    "deep-research",
+)
 
 
 def listar_modelos() -> list[tuple[str, str]]:
     """[(id, nome)] dos modelos Gemini de texto disponíveis na chave."""
-    r = requests.get(GEMINI_API, params={"pageSize": 1000},
-                     headers={"x-goog-api-key": GEMINI_KEY}, timeout=10)
+    r = requests.get(
+        GEMINI_API,
+        params={"pageSize": 1000},
+        headers={"x-goog-api-key": GEMINI_KEY},
+        timeout=10,
+    )
     r.raise_for_status()
     modelos = []
     for m in r.json().get("models", []):
         id_ = m["name"].removeprefix("models/")
-        if (id_.startswith("gemini-") and "generateContent" in m.get("supportedGenerationMethods", [])
-                and not any(t in id_ for t in _FORA_DA_LISTA)):
+        if (
+            id_.startswith("gemini-")
+            and "generateContent" in m.get("supportedGenerationMethods", [])
+            and not any(t in id_ for t in _FORA_DA_LISTA)
+        ):
             modelos.append((id_, m.get("displayName", id_)))
     return sorted(modelos, reverse=True)
 

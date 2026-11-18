@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('news_', '0002_configuracao'),
+        ("news_", "0002_configuracao"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='configuracao',
-            name='modelo',
-            field=models.CharField(default='gemini-3.8-flash', max_length=100),
+            model_name="configuracao",
+            name="modelo",
+            field=models.CharField(default="gemini-3.8-flash", max_length=100),
         ),
     ]

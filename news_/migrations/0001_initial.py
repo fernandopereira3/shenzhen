@@ -4,36 +4,61 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Destinatario',
+            name="Destinatario",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('nome', models.CharField(blank=True, max_length=100)),
-                ('email', models.EmailField(max_length=254, unique=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("nome", models.CharField(blank=True, max_length=100)),
+                ("email", models.EmailField(max_length=254, unique=True)),
             ],
             options={
-                'ordering': ['nome', 'email'],
+                "ordering": ["nome", "email"],
             },
         ),
         migrations.CreateModel(
-            name='Envio',
+            name="Envio",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('inicio', models.DateTimeField(auto_now_add=True)),
-                ('fim', models.DateTimeField(blank=True, null=True)),
-                ('status', models.CharField(choices=[('enviando', 'Enviando'), ('enviado', 'Enviado'), ('falhou', 'Falhou')], default='enviando', max_length=10)),
-                ('destinatarios', models.PositiveIntegerField(default=0)),
-                ('erro', models.TextField(blank=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("inicio", models.DateTimeField(auto_now_add=True)),
+                ("fim", models.DateTimeField(blank=True, null=True)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("enviando", "Enviando"),
+                            ("enviado", "Enviado"),
+                            ("falhou", "Falhou"),
+                        ],
+                        default="enviando",
+                        max_length=10,
+                    ),
+                ),
+                ("destinatarios", models.PositiveIntegerField(default=0)),
+                ("erro", models.TextField(blank=True)),
             ],
             options={
-                'ordering': ['-inicio'],
+                "ordering": ["-inicio"],
             },
         ),
     ]

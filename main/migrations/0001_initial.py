@@ -5,26 +5,50 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Agendamento',
+            name="Agendamento",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('bot', models.CharField(max_length=30)),
-                ('tipo', models.CharField(choices=[('diario', 'Todo dia às'), ('intervalo', 'A cada N minutos')], default='diario', max_length=10)),
-                ('horario', models.TimeField(blank=True, null=True)),
-                ('intervalo', models.PositiveIntegerField(blank=True, null=True, validators=[django.core.validators.MinValueValidator(1)], verbose_name='minutos')),
-                ('ativo', models.BooleanField(default=True)),
-                ('ultima_execucao', models.DateTimeField(blank=True, null=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("bot", models.CharField(max_length=30)),
+                (
+                    "tipo",
+                    models.CharField(
+                        choices=[
+                            ("diario", "Todo dia às"),
+                            ("intervalo", "A cada N minutos"),
+                        ],
+                        default="diario",
+                        max_length=10,
+                    ),
+                ),
+                ("horario", models.TimeField(blank=True, null=True)),
+                (
+                    "intervalo",
+                    models.PositiveIntegerField(
+                        blank=True,
+                        null=True,
+                        validators=[django.core.validators.MinValueValidator(1)],
+                        verbose_name="minutos",
+                    ),
+                ),
+                ("ativo", models.BooleanField(default=True)),
+                ("ultima_execucao", models.DateTimeField(blank=True, null=True)),
             ],
             options={
-                'ordering': ['tipo', 'horario', 'intervalo'],
+                "ordering": ["tipo", "horario", "intervalo"],
             },
         ),
     ]
