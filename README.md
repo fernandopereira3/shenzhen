@@ -6,7 +6,7 @@ Hoje moram na cidade três bots:
 
 | Bot | Rota | O que faz |
 |---|---|---|
-| 🤖 **Braga** | `/braga/` | Entra no EAD da Polícia Penal de SP com cada conta cadastrada, se inscreve nos cursos e lista os que estão incompletos. |
+| 🤖 **Braga** | `/braga/` | Entra numa plataforma de cursos EAD com cada conta cadastrada, se inscreve nos cursos e lista os que estão incompletos. |
 | 📰 **Cronjob News** | `/news/` | Pede ao Gemini um resumo das notícias do dia (com busca no Google) e envia uma newsletter por e-mail. |
 | 🏷️ **Fuçador** | `/fucador/` | Para cada produto cadastrado, pede ao Gemini as melhores ofertas nas lojas e envia por e-mail e/ou WhatsApp. |
 
@@ -103,10 +103,10 @@ Cada horário pode ser **"Todo dia às HH:MM"** (com 2 minutos de tolerância) o
 
 ### 🤖 Braga — `braga/`
 
-Automatiza o EAD (Moodle) da Polícia Penal de SP com Selenium e Chromium headless.
+Automatiza uma plataforma de cursos EAD (Moodle) com Selenium e Chromium headless.
 
 **Para cada conta cadastrada (CPF + senha):**
-1. faz login em `ead.policiapenal.sp.gov.br`;
+1. faz login na plataforma;
 2. abre `enrol/index.php?id=N` para os cursos de 1 até `ENROL_ID_MAX` (padrão 100) e clica em "Inscreva-me" onde aparecer;
 3. abre "Meus cursos", confere o progresso de cada um e guarda os incompletos.
 
