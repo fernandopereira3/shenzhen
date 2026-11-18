@@ -1,0 +1,38 @@
+{% load static %}<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Shenzhen{% endblock %}</title>
+  <meta name="theme-color" content="#060a13">
+  <link rel="icon" type="image/x-icon" href="{% static 'imgs/favicon.ico' %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@400&family=Space+Grotesk:wght@500;700&display=swap">
+  {# ?v=: mude o número ao alterar o CSS, pra o navegador (principalmente no celular) não usar o antigo do cache #}
+  <link rel="stylesheet" href="{% static 'css/base.css' %}?v=2">
+</head>
+<body>
+  <nav class="navbar">
+    <a class="brand" href="{% url 'main' %}">
+      <span class="hanzi" lang="zh">深圳</span> SHENZHEN
+    </a>
+    {% if user.is_authenticated %}
+      <span class="spacer"></span>
+      <span>{{ user.username }}</span>
+      <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit">Sair</button>
+      </form>
+    {% endif %}
+  </nav>
+  <main class="content">
+    {% if messages %}
+      <ul class="mensagens">
+        {% for m in messages %}<li class="{{ m.tags }}">{{ m }}</li>{% endfor %}
+      </ul>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

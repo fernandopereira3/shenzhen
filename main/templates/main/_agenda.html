@@ -1,0 +1,35 @@
+<section class="card" id="sec-agenda">
+  <h2>Agenda</h2>
+  {% if agendamentos %}
+    <p class="muted">{% if proxima %}Próxima execução: {{ proxima|date:"d/m H:i" }}{% else %}Todos os horários estão pausados.{% endif %}</p>
+    <ul class="contas">
+      {% for ag in agendamentos %}
+        <li{% if not ag.ativo %} class="pausado"{% endif %}>
+          <span>
+            {{ ag }}
+            {% if not ag.ativo %}<span class="status status-cancelada">Pausado</span>{% endif %}
+            {% if ag.ultima_execucao %}<small class="muted">· última {{ ag.ultima_execucao|date:"d/m H:i" }}</small>{% endif %}
+          </span>
+          <span class="agenda-acoes">
+            <form method="post" action="{% url 'agenda_alternar' ag.pk %}">
+              {% csrf_token %}
+              <button type="submit" class="secundario">{% if ag.ativo %}Pausar{% else %}Retomar{% endif %}</button>
+            </form>
+            <form method="post" action="{% url 'agenda_remover' ag.pk %}">
+              {% csrf_token %}
+              <button type="submit" class="secundario">Remover</button>
+            </form>
+          </span>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="muted">Nenhum horário agendado: o bot só roda pelo botão.</p>
+  {% endif %}
+  <form method="post" action="{% url 'agenda_adicionar' bot %}" class="form-linha">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Agendar</button>
+  </form>
+  <p class="muted">"Todo dia às" usa o horário; "A cada N minutos" usa os minutos.</p>
+</section>

@@ -1,0 +1,132 @@
+{% extends 'bot_base.html' %}
+{% load agenda %}
+{% block title %}Braga{% endblock %}
+{% block secao_inicial %}{% if rodando %}sec-execucao{% endif %}{% endblock %}
+{% block secoes %}
+  <li><a href="#sec-contas">Contas</a></li>
+  <li><a href="#sec-agenda">Agenda</a></li>
+  <li><a href="#sec-execucao">Execução</a></li>
+  <li><a href="#sec-historico">Histórico</a></li>
+{% endblock %}
+{% block bot_conteudo %}
+  <section class="card" id="sec-contas">
+    <h2>Contas</h2>
+    <p class="muted">{{ contas|length }} conta(s) cadastrada(s).</p>
+    <br>
+    <button type="button" onclick="document.getElementById('contas').showModal()">Gerenciar contas</button>
+  </section>
+
+  <dialog id="contas" class="modal">
+    <h2>Contas</h2>
+    <ul class="contas">
+      {% for conta in contas %}
+        <li>
+          <span>{% if conta.nome %}<strong>{{ conta.nome }}</strong> · {% endif %}{{ conta.cpf }}</span>
+          <form method="post" action="{% url 'braga_remover' %}">
+            {% csrf_token %}
+            <input type="hidden" name="cpf" value="{{ conta.cpf }}">
+            <button type="submit" class="secundario">Remover</button>
+          </form>
+        </li>
+      {% empty %}
+        <li class="muted">Nenhuma conta cadastrada.</li>
+      {% endfor %}
+    </ul>
+
+    <h3>Adicionar conta</h3>
+    <form method="post" action="{% url 'braga_adicionar' %}" class="form-linha">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Adicionar</button>
+    </form>
+    <p class="muted">CPF já cadastrado: só os campos preenchidos são alterados. Para pôr ou trocar o nome, deixe a senha em branco.</p>
+    <div class="modal-acoes">
+      <form method="dialog"><button type="submit" class="secundario">Fechar</button></form>
+    </div>
+  </dialog>
+  {% if abrir_modal %}
+    <script>document.getElementById('contas').showModal()</script>
+  {% endif %}
+
+  {% agenda_card 'braga' %}
+
+  <section class="card" id="sec-execucao">
+    <h2>Execução</h2>
+    {% if rodando %}
+      {% if cancelando %}
+        <p class="muted">⛔ Cancelando… o bot para no próximo passo.</p>
+      {% else %}
+        <p class="muted" id="status-texto">⏳ Rodando…</p>
+        <form method="post" action="{% url 'braga_cancelar' %}">
+          {% csrf_token %}
+          <button type="submit" class="secundario">Cancelar execução</button>
+        </form>
+      {% endif %}
+    {% elif contas %}
+      <form method="post" action="{% url 'braga_rodar' %}">
+        {% csrf_token %}
+        <button type="submit">Rodar agora</button>
+      </form>
+    {% else %}
+      <p class="muted">Adicione uma conta para poder rodar.</p>
+    {% endif %}
+    <br>
+    <details class="log-box" id="log-box"{% if rodando %} open{% endif %}{% if not log %} hidden{% endif %}>
+      <summary>Log da {% if rodando %}execução atual{% else %}última execução{% endif %}</summary>
+      <pre id="log" class="log">{{ log }}</pre>
+    </details>
+  </section>
+  <section class="card" id="sec-historico">
+    <h2>Histórico</h2>
+    {% for ex in historico %}
+      <details class="historico">
+        <summary>
+          <span>{{ ex.inicio|date:"d/m/Y H:i" }}</span>
+          {% if ex.status == 'rodando' and not rodando %}
+            <span class="status status-falhou">Interrompida</span>
+          {% else %}
+            <span class="status status-{{ ex.status }}">{{ ex.get_status_display }}</span>
+          {% endif %}
+          {% if ex.fim %}<span class="muted">{{ ex.inicio|timesince:ex.fim }}</span>{% endif %}
+          <span class="muted">· {{ ex.incompletos.all|length }} curso(s) incompleto(s)</span>
+        </summary>
+        {% regroup ex.incompletos.all by cpf as por_conta %}
+        {% for conta in por_conta %}
+          <h3 class="historico-conta">👤 {{ conta.grouper }} — {{ conta.list|length }} curso(s) para completar</h3>
+          <ul class="historico-cursos">
+            {% for c in conta.list %}
+              <li><a href="{{ c.url }}" target="_blank" rel="noopener">[{{ c.curso_id }}] {{ c.nome }}</a></li>
+            {% endfor %}
+          </ul>
+        {% empty %}
+          <p class="muted">Nenhum curso incompleto registrado.</p>
+        {% endfor %}
+      </details>
+    {% empty %}
+      <p class="muted">Nenhuma execução ainda.</p>
+    {% endfor %}
+  </section>
+
+  {% if rodando %}
+    <script>
+      // Atualiza o log ao vivo; quando o bot termina, recarrega pra voltar o botão "Rodar".
+      const logEl = document.getElementById('log');
+      const atualizar = async () => {
+        const r = await fetch('{% url "braga_status" %}');
+        if (!r.ok) return;
+        const dados = await r.json();
+        const noFim = logEl.scrollTop + logEl.clientHeight >= logEl.scrollHeight - 20;
+        logEl.textContent = dados.log;
+        document.getElementById('log-box').hidden = !dados.log;
+        if (noFim) logEl.scrollTop = logEl.scrollHeight;
+        if (!dados.rodando) location.reload();
+        else if (dados.cancelando) {
+          const t = document.getElementById('status-texto');
+          if (t) t.textContent = '⛔ Cancelando… o bot para no próximo passo.';
+        }
+      };
+      logEl.scrollTop = logEl.scrollHeight;
+      setInterval(atualizar, 2000);
+    </script>
+  {% endif %}
+{% endblock %}

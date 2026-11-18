@@ -1,0 +1,6 @@
+{% load static %}
+{% if bot %}
+  <img src="{% static bot.icone %}" alt=""{% if bot.pixel %} class="pixel"{% endif %}>
+  <h1>{{ bot.nome }}</h1>
+  <p class="muted">{{ bot.descricao }}</p>
+{% endif %}

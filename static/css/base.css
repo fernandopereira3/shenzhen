@@ -1,0 +1,525 @@
+/* ==========================================================================
+   Tema Shenzhen: a cidade à noite. Azul-noite, vidro escuro e neon
+   ciano/magenta das fachadas de LED; vermelho só no 深圳.
+   ========================================================================== */
+:root {
+  color-scheme: dark; /* campos, seletor de hora e barras de rolagem nativos no escuro */
+
+  --bg: #060a13;
+  --bg-2: #0b1222;
+  --vidro: rgba(14, 22, 40, 0.72);
+  --vidro-forte: rgba(10, 16, 30, 0.92);
+  --borda: rgba(120, 190, 255, 0.14);
+  --borda-forte: rgba(120, 190, 255, 0.28);
+
+  --text: #e6edf7;
+  --muted: #8b9bb4;
+
+  --primary: #22d3ee;        /* ciano neon */
+  --primary-dark: #0891b2;
+  --primary-text: #03141c;   /* texto sobre o ciano */
+  --magenta: #e879f9;
+  --vermelho: #ff3b5c;
+
+  --verde: #34d399;
+  --amarelo: #fbbf24;
+  --erro: #fb7185;
+
+  --brilho: 0 0 18px rgba(34, 211, 238, 0.45);
+  --raio: 12px;
+
+  --fonte: "Inter", system-ui, sans-serif;
+  --fonte-titulo: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --fonte-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+* { box-sizing: border-box; }
+::selection { background: rgba(34, 211, 238, 0.35); color: #fff; }
+
+html { background: var(--bg); }
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--fonte);
+  color: var(--text);
+  background:
+    radial-gradient(900px 500px at 10% -10%, rgba(34, 211, 238, 0.14), transparent 60%),
+    radial-gradient(800px 600px at 110% 110%, rgba(232, 121, 249, 0.12), transparent 60%),
+    linear-gradient(180deg, var(--bg-2), var(--bg) 60%);
+  background-attachment: fixed;
+}
+/* grade fina de circuito / traçado urbano, sumindo para baixo */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(120, 190, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(120, 190, 255, 0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(180deg, #000, transparent 85%);
+}
+
+h1, h2, h3 { font-family: var(--fonte-titulo); letter-spacing: 0.01em; }
+a { color: var(--primary); }
+code {
+  font-family: var(--fonte-mono);
+  font-size: 0.85em;
+  padding: 0.05rem 0.35rem;
+  border-radius: 4px;
+  background: rgba(34, 211, 238, 0.1);
+  color: var(--primary);
+}
+
+/* ---------- Navbar ---------- */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: rgba(6, 10, 19, 0.75);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: var(--text);
+}
+/* linha neon degradê, como o contorno de LED dos prédios */
+.navbar::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--primary), var(--magenta), transparent);
+  opacity: 0.8;
+}
+.navbar a { color: var(--text); text-decoration: none; }
+.navbar a:hover { color: var(--primary); }
+.navbar .brand {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-family: var(--fonte-titulo);
+  font-weight: 700;
+  font-size: 1.15rem;
+  letter-spacing: 0.18em;
+}
+.navbar .brand .hanzi { color: var(--vermelho); letter-spacing: 0.05em; text-shadow: 0 0 12px rgba(255, 59, 92, 0.55); }
+.navbar .brand img { width: 44px; height: 44px; object-fit: cover; }
+.navbar .spacer { flex: 1; }
+.navbar form { margin: 0; }
+.navbar button {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--borda-forte);
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, box-shadow 0.2s;
+}
+.navbar button:hover { border-color: var(--primary); color: var(--primary); box-shadow: var(--brilho); }
+
+/* ---------- Conteúdo e botões ---------- */
+.content { max-width: 960px; margin: 2rem auto; padding: 0 1rem; }
+
+.content button, .modal button {
+  background: linear-gradient(135deg, var(--primary), #38bdf8);
+  color: var(--primary-text);
+  border: 0;
+  padding: 0.55rem 1.25rem;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.content button:hover, .modal button:hover { box-shadow: var(--brilho); }
+.content button:active, .modal button:active { transform: translateY(1px); }
+.content button:focus-visible, .modal button:focus-visible { outline: 2px solid var(--magenta); outline-offset: 2px; }
+
+.content button.secundario, .modal button.secundario {
+  background: transparent;
+  color: var(--primary);
+  border: 1px solid rgba(34, 211, 238, 0.5);
+}
+.content button.secundario:hover, .modal button.secundario:hover { background: rgba(34, 211, 238, 0.08); }
+
+/* ---------- Campos de formulário (todos com o mesmo visual) ---------- */
+.login-card input:not([type=hidden]):not([type=checkbox]),
+.modal input:not([type=checkbox]),
+.form-linha input:not([type=checkbox]),
+.form-linha select,
+.form-prompt input[type=text],
+.form-prompt textarea {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  background: rgba(3, 8, 18, 0.7);
+  color: var(--text);
+  border: 1px solid var(--borda-forte);
+  border-radius: 8px;
+  font: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.form-linha input:not([type=checkbox]), .form-linha select { width: auto; }
+.login-card input:focus, .modal input:focus, .form-linha input:focus, .form-linha select:focus,
+.form-prompt input:focus, .form-prompt textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.18);
+}
+input[type=checkbox] { accent-color: var(--primary); width: 1rem; height: 1rem; }
+.errorlist { color: var(--erro); font-size: 0.85rem; list-style: none; padding: 0; margin: 0.25rem 0 0; }
+
+/* ---------- Modal ---------- */
+.modal {
+  border: 1px solid var(--borda-forte);
+  border-radius: var(--raio);
+  padding: 1.5rem;
+  width: min(440px, 92vw);
+  background: var(--vidro-forte);
+  color: var(--text);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(34, 211, 238, 0.06);
+}
+.modal::backdrop { background: rgba(2, 6, 14, 0.7); backdrop-filter: blur(4px); }
+.modal h2 { margin-top: 0; color: var(--primary); }
+.modal h3 { margin-bottom: 0.5rem; }
+.modal .helptext, .modal ul { font-size: 0.8rem; color: var(--muted); }
+.modal label { display: block; margin-bottom: 0.25rem; font-weight: 600; }
+.modal-acoes { display: flex; justify-content: flex-end; gap: 0.5rem; }
+
+/* ---------- Login ---------- */
+.login-card {
+  position: relative;
+  max-width: 380px;
+  margin: 4rem auto;
+  padding: 2rem;
+  background: var(--vidro);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--borda);
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+.login-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary), var(--magenta));
+}
+.login-card h1 { margin-top: 0; text-align: center; font-size: 1.6rem; }
+.login-card .erro {
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  background: rgba(251, 113, 133, 0.12);
+  border: 1px solid rgba(251, 113, 133, 0.35);
+  color: var(--erro);
+  font-size: 0.9rem;
+}
+.login-card label { display: block; margin-bottom: 0.25rem; font-weight: 600; }
+.login-card .helptext { color: var(--muted); }
+.login-card button { width: 100%; margin-top: 0.5rem; }
+
+/* Fundo do login: o skyline, escurecido e tingido de azul */
+.login-fundo {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(180deg, rgba(6, 10, 19, 0.55), rgba(6, 10, 19, 0.92) 75%),
+    url('../imgs/background.webp') center / cover no-repeat;
+}
+
+/* ---------- Cards ---------- */
+.card {
+  position: relative;
+  background: var(--vidro);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  padding: 1.25rem 1.4rem;
+  margin-bottom: 1rem;
+}
+.card h2 {
+  margin: 0;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--primary);
+}
+.card pre { white-space: pre-wrap; margin: 0.5rem 0 0; font-size: 0.85rem; }
+.muted { color: var(--muted); font-size: 0.9rem; margin: 0.25rem 0 0; }
+/* espaço entre o texto explicativo e o botão logo abaixo (cards de Envio) */
+.card > p.muted + form { margin-top: 0.75rem; }
+
+.contas { list-style: none; padding: 0; margin: 0.75rem 0; }
+.contas li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--borda);
+}
+.contas form { margin: 0; }
+.contas li.pausado > span:first-child { color: #5d6b82; }
+.agenda-acoes { display: flex; gap: 0.5rem; }
+
+.form-linha { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.75rem; }
+.form-linha p { margin: 0; }
+.form-linha label { display: block; font-weight: 600; margin-bottom: 0.25rem; font-size: 0.9rem; }
+
+.log {
+  max-height: 420px;
+  overflow: auto;
+  background: #02060d;
+  color: #a5f3fc;
+  font-family: var(--fonte-mono);
+  font-size: 0.8rem;
+  line-height: 1.55;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+}
+
+/* ---------- Página inicial: painel com os cards 3D ---------- */
+.painel {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: var(--vidro);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--borda);
+  border-radius: 16px;
+}
+.painel-titulo {
+  margin: 0 0 1rem;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+}
+.bots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  /* o personagem sai ~4.25rem acima do card (+ zoom do hover e perspectiva):
+     o espaço entre linhas precisa ser maior que isso pra não invadir o card de cima */
+  gap: 6.5rem 2rem;
+  padding-top: 5rem;
+}
+
+/* Card 3D: camadas em profundidades diferentes; o JS inclina via --rx/--ry */
+.bot-card {
+  display: block;
+  height: 240px;
+  perspective: 900px;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 16px;
+}
+.bot-card:focus-visible { outline: 2px solid var(--primary); outline-offset: 6px; }
+.bot-card-3d {
+  position: relative;
+  height: 100%;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+}
+.bot-card-3d > * { position: absolute; }
+
+/* sombra colorida feita da própria imagem, borrada e mais funda */
+.bot-sombra {
+  inset: 12% 8% -6%;
+  background: center / cover;
+  border-radius: 16px;
+  filter: blur(22px) saturate(1.5);
+  opacity: 0.6;
+  transform: translateZ(-50px);
+}
+/* cenário: a logo ampliada sob um céu noturno ciano → magenta */
+.bot-cena {
+  inset: 0;
+  border-radius: 16px;
+  background-color: #0b1222;
+  background-position: center;
+  background-size: 180%;
+  box-shadow: inset 0 0 0 1px rgba(120, 190, 255, 0.2);
+  transform: translateZ(0);
+}
+.bot-cena::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(160deg, rgba(8, 145, 178, 0.55), rgba(6, 10, 19, 0.93) 60%, rgba(134, 25, 143, 0.6));
+}
+.bot-moldura {
+  inset: 10px;
+  border: 1px solid rgba(34, 211, 238, 0.65);
+  border-radius: 10px;
+  box-shadow: 0 0 14px rgba(34, 211, 238, 0.35), inset 0 0 14px rgba(34, 211, 238, 0.15);
+  transform: translateZ(25px);
+  pointer-events: none;
+  transition: box-shadow 0.3s;
+}
+.bot-card:hover .bot-moldura { box-shadow: 0 0 22px rgba(34, 211, 238, 0.6), inset 0 0 18px rgba(232, 121, 249, 0.25); }
+/* personagem: sai por cima do card e fica na camada mais próxima */
+.bot-recorte {
+  top: -3.25rem;
+  left: 50%;
+  width: 128px;
+  height: 128px;
+  object-fit: cover;
+  border-radius: 20px;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.45);
+  transform: translateX(-50%) translateZ(70px);
+  transition: scale 0.3s;
+}
+.bot-card.recorte .bot-recorte {
+  width: 150px;
+  height: 150px;
+  top: -4.25rem;
+  border-radius: 0;
+  box-shadow: none;
+  filter: drop-shadow(0 14px 14px rgba(0, 0, 0, 0.55));
+}
+.bot-card.pixel img, .bot-card.pixel .bot-cena, .bot-card.pixel .bot-sombra { image-rendering: pixelated; }
+.bot-card:hover .bot-recorte, .bot-card:focus-visible .bot-recorte { scale: 1.08; }
+
+.bot-texto {
+  left: 1.5rem;
+  right: 1.5rem;
+  bottom: 1.4rem;
+  text-align: center;
+  transform: translateZ(45px);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+}
+.bot-texto h2 { margin: 0 0 0.35rem; font-size: 1.5rem; }
+.bot-texto p { margin: 0; font-size: 0.9rem; line-height: 1.35; opacity: 0.9; }
+
+/* ---------- Avisos ---------- */
+.mensagens { list-style: none; padding: 0; margin: 0 0 1rem; }
+.mensagens li {
+  padding: 0.6rem 0.9rem;
+  border-radius: 8px;
+  background: rgba(34, 211, 238, 0.1);
+  border: 1px solid rgba(34, 211, 238, 0.3);
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+.mensagens li.error { background: rgba(251, 113, 133, 0.1); border-color: rgba(251, 113, 133, 0.35); color: var(--erro); }
+
+/* ---------- Páginas dos bots: painel lateral + abas ---------- */
+.content:has(.bot-layout) { max-width: 1200px; }
+.bot-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+.bot-lateral {
+  position: sticky;
+  top: 5rem; /* abaixo do navbar fixo */
+  padding: 1.5rem 1.25rem;
+  background: var(--vidro);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--borda);
+  border-radius: 16px;
+  text-align: center;
+}
+.bot-lateral img { width: 120px; height: 120px; object-fit: contain; filter: drop-shadow(0 0 18px rgba(34, 211, 238, 0.3)); }
+.bot-lateral img.pixel { image-rendering: pixelated; }
+.bot-lateral h1 { margin: 0.5rem 0 0.25rem; font-size: 1.5rem; color: var(--text); }
+.bot-lateral .muted { font-size: 0.85rem; }
+.bot-secoes ul {
+  list-style: none;
+  margin: 1.25rem 0 0;
+  padding: 1rem 0 0;
+  border-top: 1px solid var(--borda);
+  text-align: left;
+}
+.bot-secoes ul:not(:has(li)) { display: none; }
+.bot-secoes a {
+  display: block;
+  padding: 0.5rem 0.8rem;
+  margin-bottom: 0.15rem;
+  border-radius: 8px;
+  color: var(--muted);
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+}
+.bot-secoes a:hover, .bot-secoes a:focus-visible { background: rgba(34, 211, 238, 0.08); color: var(--text); }
+.bot-secoes a[aria-current] {
+  background: linear-gradient(135deg, var(--primary), #38bdf8);
+  color: var(--primary-text);
+  font-weight: 600;
+  box-shadow: var(--brilho);
+}
+.bot-conteudo .card:first-child { margin-top: 0; }
+[id^="sec-"] { scroll-margin-top: 5rem; }
+/* com abas, o título do card repete o link do painel: some da tela, fica pro leitor de tela */
+.abas .bot-conteudo > [id^="sec-"] > h2 {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+@media (max-width: 760px) {
+  .bot-layout { grid-template-columns: 1fr; }
+  .bot-lateral { position: static; }
+}
+
+/* ---------- Log, histórico e status ---------- */
+.log-box { margin-top: 1rem; }
+.log-box summary { cursor: pointer; color: var(--primary); font-weight: 600; padding: 0.25rem 0; }
+.log-box .log { margin-top: 0.5rem; }
+
+.historico { border-bottom: 1px solid var(--borda); }
+.historico summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 0;
+  cursor: pointer;
+}
+.historico summary:hover { color: var(--primary); }
+.historico-conta { margin: 0.5rem 0 0.25rem; font-size: 0.95rem; }
+.historico-cursos { margin: 0 0 0.75rem; padding-left: 1.25rem; font-size: 0.9rem; }
+.historico-cursos a { color: var(--primary); }
+
+.status {
+  padding: 0.12rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  border: 1px solid currentColor;
+}
+.status-concluida, .status-enviado { color: var(--verde); background: rgba(52, 211, 153, 0.1); }
+.status-rodando, .status-enviando { color: var(--primary); background: rgba(34, 211, 238, 0.1); }
+.status-cancelada { color: var(--amarelo); background: rgba(251, 191, 36, 0.1); }
+.status-falhou { color: var(--erro); background: rgba(251, 113, 133, 0.1); }
+
+/* ---------- Aba Gemini (modelo + prompt) ---------- */
+.form-prompt label { display: block; font-weight: 600; margin-bottom: 0.25rem; }
+.form-prompt input[type=text] { max-width: 360px; }
+.form-prompt textarea { font-size: 0.9rem; line-height: 1.55; resize: vertical; }
+.form-prompt small { display: block; margin-top: 0.3rem; font-size: 0.8rem; }
+.form-prompt .canais { display: flex; flex-wrap: wrap; gap: 1.5rem; }
+.form-prompt .canais label { display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 600; }
+
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+@media (prefers-reduced-motion: reduce) {
+  .bot-recorte, .bot-moldura, .content button, .modal button { transition: none; }
+}

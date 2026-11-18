@@ -1,0 +1,117 @@
+{% extends 'bot_base.html' %}
+{% load agenda %}
+{% block title %}Cronjob News{% endblock %}
+{% block secao_inicial %}{% if enviando %}sec-envio{% endif %}{% endblock %}
+{% block secoes %}
+  <li><a href="#sec-destinatarios">Destinatários</a></li>
+  <li><a href="#sec-agenda">Agenda</a></li>
+  <li><a href="#sec-envio">Envio</a></li>
+  <li><a href="#sec-gemini">IA Prompt</a></li>
+  <li><a href="#sec-historico">Histórico</a></li>
+{% endblock %}
+{% block bot_conteudo %}
+  <section class="card" id="sec-destinatarios">
+    <h2>Destinatários</h2>
+    <p class="muted">{{ destinatarios|length }} destinatário(s). Recebem em cópia oculta: um não vê o e-mail do outro.</p>
+    <br>
+    <button type="button" onclick="document.getElementById('destinatarios').showModal()">Gerenciar destinatários</button>
+  </section>
+
+  <dialog id="destinatarios" class="modal">
+    <h2>Destinatários</h2>
+    <ul class="contas">
+      {% for d in destinatarios %}
+        <li>
+          <span>{% if d.nome %}<strong>{{ d.nome }}</strong> · {% endif %}{{ d.email }}</span>
+          <form method="post" action="{% url 'news_remover' d.pk %}">
+            {% csrf_token %}
+            <button type="submit" class="secundario">Remover</button>
+          </form>
+        </li>
+      {% empty %}
+        <li class="muted">Nenhum destinatário.</li>
+      {% endfor %}
+    </ul>
+    <h3>Adicionar destinatário</h3>
+    <form method="post" action="{% url 'news_adicionar' %}" class="form-linha">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Adicionar</button>
+    </form>
+    <div class="modal-acoes">
+      <form method="dialog"><button type="submit" class="secundario">Fechar</button></form>
+    </div>
+  </dialog>
+  {% if abrir_modal %}
+    <script>document.getElementById('destinatarios').showModal()</script>
+  {% endif %}
+
+  {% agenda_card 'news_' %}
+
+  <section class="card" id="sec-envio">
+    <h2>Envio</h2>
+    {% if enviando %}
+      <p class="muted">⏳ Buscando notícias e enviando… leva cerca de 1 minuto. A página atualiza sozinha.</p>
+      <script>setTimeout(() => location.reload(), 5000)</script>
+    {% elif destinatarios %}
+      <p class="muted">Monta a newsletter de hoje com o Gemini e envia para todos os destinatários.</p>
+      <form method="post" action="{% url 'news_enviar' %}">
+        {% csrf_token %}
+        <button type="submit">Enviar agora</button>
+      </form>
+    {% else %}
+      <p class="muted">Adicione um destinatário para poder enviar.</p>
+    {% endif %}
+  </section>
+
+  <section class="card" id="sec-gemini">
+    <h2>Gemini</h2>
+    <form method="post" action="{% url 'news_prompt' %}" class="form-prompt">
+      {% csrf_token %}
+      {{ prompt_form.non_field_errors }}
+      <p>
+        <label for="{{ prompt_form.modelo.id_for_label }}">Modelo</label>
+        {{ prompt_form.modelo }}
+        {{ prompt_form.modelo.errors }}
+        <small class="muted">
+          {% if modelos %}{{ modelos|length }} modelo(s) disponíveis: clique no campo para ver.{% else %}Não foi possível carregar a lista; digite o nome.{% endif %}
+          Padrão: <code>{{ modelo_padrao }}</code>. Modelos "lite" não trazem as fontes, e a notícia fica sem link.
+        </small>
+      </p>
+      <datalist id="modelos-gemini">
+        {% for id, nome in modelos %}<option value="{{ id }}">{{ nome }}</option>{% endfor %}
+      </datalist>
+      <p>
+        <label for="{{ prompt_form.prompt.id_for_label }}">Prompt</label>
+        {{ prompt_form.prompt }}
+        {{ prompt_form.prompt.errors }}
+        <small class="muted">Use <code>{hoje}</code> onde deve entrar a data do dia. O formato da resposta (JSON) é acrescentado automaticamente.</small>
+      </p>
+      <div class="modal-acoes">
+        <button type="submit" name="restaurar" class="secundario" formnovalidate
+                onclick="return confirm('Voltar ao modelo e prompt originais? O que está aqui será perdido.')">Restaurar padrão</button>
+        <button type="submit">Salvar</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="card" id="sec-historico">
+    <h2>Histórico</h2>
+    {% for e in historico %}
+      <details class="historico">
+        <summary>
+          <span>{{ e.inicio|date:"d/m/Y H:i" }}</span>
+          {% if e.status == 'enviando' and not enviando %}
+            <span class="status status-falhou">Interrompido</span>
+          {% else %}
+            <span class="status status-{{ e.status }}">{{ e.get_status_display }}</span>
+          {% endif %}
+          <span class="muted">· {{ e.destinatarios }} destinatário(s)</span>
+        </summary>
+        {% if e.erro %}<pre class="log">{{ e.erro }}</pre>{% else %}<p class="muted">Sem erros.</p>{% endif %}
+      </details>
+    {% empty %}
+      <p class="muted">Nenhum envio ainda.</p>
+    {% endfor %}
+  </section>
+{% endblock %}

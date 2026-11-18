@@ -1,0 +1,27 @@
+{# Modal de uma lista (produtos, e-mails ou WhatsApp): itens com Remover + formulário de adicionar #}
+<dialog id="modal-{{ tipo }}" class="modal">
+  <h2>{{ titulo }}</h2>
+  <ul class="contas">
+    {% for item in itens %}
+      <li>
+        <span>{% if item.nome and tipo != 'produto' %}<strong>{{ item.nome }}</strong> · {% endif %}{{ item }}</span>
+        <form method="post" action="{% url 'fucador_remover' tipo item.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="secundario">Remover</button>
+        </form>
+      </li>
+    {% empty %}
+      <li class="muted">Nenhum ainda.</li>
+    {% endfor %}
+  </ul>
+  <h3>Adicionar</h3>
+  <form method="post" action="{% url 'fucador_adicionar' tipo %}" class="form-linha">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Adicionar</button>
+  </form>
+  {% if ajuda %}<p class="muted">{{ ajuda }}</p>{% endif %}
+  <div class="modal-acoes">
+    <form method="dialog"><button type="submit" class="secundario">Fechar</button></form>
+  </div>
+</dialog>

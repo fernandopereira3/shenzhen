@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<h1 class="painel-titulo">Bots na Cidade</h1>
+  <div class="painel">
+    <div class="bots">
+      {% for bot in bots %}
+        {% static bot.icone as img %}
+        <a class="bot-card{% if bot.pixel %} pixel{% endif %}{% if bot.recorte %} recorte{% endif %}" href="{% url bot.url %}">
+          <div class="bot-card-3d">
+            <div class="bot-sombra" style="background-image: url('{{ img }}')"></div>
+            <div class="bot-cena" style="background-image: url('{{ img }}')"></div>
+            <div class="bot-moldura"></div>
+            <img class="bot-recorte" src="{{ img }}" alt="">
+            <div class="bot-texto">
+              <h2>{{ bot.nome }}</h2>
+              <p>{{ bot.descricao }}</p>
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+  <script src="{% static 'js/bot-cards.js' %}"></script>
+{% endblock %}
